@@ -6,7 +6,7 @@ const alertsRoutes = require('./routes/alertsRoutes');
 
 //create an express app
 const app = express();
-const PORT = 3000;
+const PORT = 9000;
 
 //middleware
 app.use(bodyParser.json());

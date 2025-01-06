@@ -2,20 +2,7 @@ const sequelize = require('../config/db');
 const { QueryTypes } = require('sequelize');
 const jsonschema = require('jsonschema');
 
- 
 //POST /alerts
-//define the schema for the fields data
-const fieldsSchema = {
-    type: 'array',
-    item: {
-        type: 'object',
-        properties: {
-            name: {type: 'string'},
-            datatype: {type: 'string'},
-        },
-        required: ['name', 'properties'],
-        }
-    };
 exports.createAlerts = async (req, res) => {
 
     const { typeId, alerts } = req.body;

@@ -3,21 +3,22 @@ const sequelize = require('../config/db.js');
 const Type = require('./types');
 
 const Field = sequelize.define('Field',{
-    // id: {
-    //     type: DataTypes.INTEGER,
-    //     primaryKey: true,
-    // },
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
     name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        // unique: true,
     },
     datatype: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    tyepId: {
-        type: DataTypes.STRING,
+    typeId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: { 
             model: Type,
@@ -32,7 +33,7 @@ const Field = sequelize.define('Field',{
 });
 
 //Establishing the relationship
-Type.hasMany(Field, {foreignKey: 'typeId', as: 'fields'});
+// Type.hasMany(Field, {foreignKey: 'typeId', as: 'field1'});
 Field.belongsTo(Type, {foreignKey: 'typeId'});
 
 // //Association

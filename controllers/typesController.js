@@ -1,5 +1,6 @@
+const sequelize = require('../config/db.js');
 const Type = require('../models/types.js');
-const Field = require('../models/types.js');
+const Field = require('../models/fields.js');
 
 //POST type
 exports.createType = async(req, res) => {
