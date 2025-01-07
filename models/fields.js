@@ -34,7 +34,7 @@ const Field = sequelize.define('Field',{
 
 //Establishing the relationship
 // Type.hasMany(Field, {foreignKey: 'typeId', as: 'field1'});
-Field.belongsTo(Type, {foreignKey: 'typeId'});
+Field.belongsTo(Type, {foreignKey: 'typeId', as: 'type'});
 
 // //Association
 // Field.associate = (model) => {
