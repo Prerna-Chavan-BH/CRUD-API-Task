@@ -19,9 +19,9 @@ const Field = sequelize.define('Field',{
     },
     typeId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        // allowNull: false,
         references: { 
-            model: Type,
+            model: 'type',
             key: 'id',
         },
     },
@@ -33,8 +33,7 @@ const Field = sequelize.define('Field',{
 });
 
 //Establishing the relationship
-// Type.hasMany(Field, {foreignKey: 'typeId', as: 'field1'});
-Field.belongsTo(Type, {foreignKey: 'typeId', as: 'type'});
+Field.belongsTo(Type, {foreignKey: 'typeId'});
 
 // //Association
 // Field.associate = (model) => {
@@ -43,5 +42,5 @@ Field.belongsTo(Type, {foreignKey: 'typeId', as: 'type'});
 //         as: 'type'
 //     });
 // };
-
+console.log(Type);
 module.exports = Field;

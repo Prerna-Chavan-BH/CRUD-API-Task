@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const initDB = require('./models/dbSetup');
 const typesRoutes = require('./routes/typesRoutes');
 const alertsRoutes = require('./routes/alertsRoutes');
+const sequelize = require('./config/db');
 
 //create an express app
 const app = express();
@@ -26,6 +27,7 @@ app.listen(PORT, async() => {
     try{
         console.log(`Server is running at http://localhost:${PORT}`);
         await initDB();  //initialise database tables
+        await sequelize.authenticate();
         console.log('Database initialized successfully');
     }catch(err){
         console.error('Error initialising database: ',err.message);

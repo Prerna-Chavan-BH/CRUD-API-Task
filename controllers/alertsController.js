@@ -21,9 +21,10 @@ exports.createAlerts = async (req, res) => {
                 {
                     model: Field,
                     as: 'fields'
-                }
-            ]
+                },
+            ],
         });
+        console.log('Type and associated fields: ', JSON.stringify(type, null, 2));
 
         //checking if the type exists
         if(!type){
