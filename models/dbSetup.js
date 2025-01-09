@@ -1,17 +1,28 @@
 const sequelize = require('../config/db');
-const Type = require('./types');
-const Field = require('./fields')
+const { DataTypes } = require('sequelize');
 
-const initDB = async () => {
+async function createDynamicTable(typeID, fields) {
     try{
-        await sequelize.authenticate();
-        console.log('Database connected successfully');
-        await Type.sync({alter: true});  //create types table if not exists, alter true will update the db schema to matchg the models
-        await Field.sync({alter: true});  //create types table if not exists, alter true will update the db schema to matchg the models
-        console.log('Database schema synced successfully');
-    } catch(err){
-        console.error('Database connection error: ', err);
-    }
-};
+        const tableName = `type_${typeID}`;
+        const attributes = {};
 
-module.exports = initDB;
+        //convert fields into sequelize attributes
+        fields.forEach((field) => {
+            attributes[field.name] = {
+                type: DataTypes[field.datatype.toUpperCase()],
+            };
+        });
+
+        const dynamicModel = sequelize.define(tableName, attributes,{
+            tableName,
+            timestamps: false,
+        });
+
+        await dynamicModel.sync();     //create the table iof doesnt exits
+        console.log(`Table ${tableName} created successfully.`);
+    }catch(error){
+        console.log('Error creating dynamic table: ', error);
+    }
+}
+
+module.exports = { createDynamicTable };

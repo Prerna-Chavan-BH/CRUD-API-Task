@@ -1,68 +1,57 @@
 const sequelize = require('../config/db.js');
-const Type = require('../models/types.js');
-const Field = require('../models/fields.js');
+const { Type } = require('../models/types.js');
+const { createDynamicTable } = require('../models/dbSetup');
 
-//POST type
-exports.createType = async(req, res) => {
-        const {id, name, fields, desc} = req.body;
+//create a new type and corresponding table
+async function createType (req, res){
+    const { id, name, fields, desc } = req.body;
 
-        try
-        {
-            //check if the type already exists
-            const existingType = await Type.findOne({ where: {name} });
-            if(existingType){
-                return res.status(400).json({
-                    error: `Type with name "${name}" already exists`,
-                });
-            }
-
-            //validate the required fields
-            if(!id || !name || !Array.isArray(fields) || fields.length === 0 || !desc) {
-                return res.status(400).json({error: 'Invalid data. "id", "name", "fields" and "desc" are required'});
-            }
-
-            //create the type
-            const newType = await Type.create({id, name, desc});
-
-            //create the fields record and associate them with the type
-            const fieldPromises = fields.map((field) => {
-                if(!field.name || !field.datatype) {
-                    throw new Error('Each filed must have "name" and "datatype"');
-                }
-                return Field.create({...field, typeId: newType.id});
-            });
-
-            await Promise.all(fieldPromises);
-
-            res.status(201).json({
-                message: 'Type and fields created successfully', 
-                data: newType
-            });
-
-        } catch(error){
-            console.error('Error creating type and fields: ', error.message);
-            res.status(500).json({error: error.message});
+    try{
+        //check if the type alrready exists
+        const existingType = await Types.findBypk(id);
+        if(existingType){
+            return res.status(400).json({message: 'Type with this ID already exists.'});
         }
-    // console.log(req.body);
-};
 
-//GET /types
-exports.getAlltypes = async(req, res) => {
-    try{
-        const types = await Type.findAll();
-        res.json(types);
-    } catch(err){
-        res.status(500).json({error: err.message});
+        //insert into the types table
+        await Types.create({ id, name, fields, desc });
+
+        //create dynmaic table for the type
+        await createDynamicTable(id, fields);
+
+        res.status(201).json({id});
+    }catch(error){
+        console.error('Error creating types: ',error);
+        res.status(500).json({message: 'Internal server error'});
     }
-};
+    }
 
-//GET /types/:typeID
-exports.getTypeById = async(req, res) => {
-    try{
+    //get all types
+    async function getAllTypes(req, res){
+        try{
+            const types = await Types.findAll();
+            res.status(200).json(types);
+        }catch(error){
+            console.error('Error fetching types: ',error);
+            res.status(500).json({message: 'Internal server error'});
+        }
+    }
+
+    //get a specific type by id
+    async function getTypeById(req, res){
         const {typeId} = req.params;
-        const type = await Type.findByPk(typeId);
-        res.json(type || {});
-    } catch(err){
-        res.status(500).json({error: err.message});
+
+        try{
+            const type = await Types.findBypk(typeId);
+            if(!type){
+                return res.status(404).json({message: 'Type not found.'});
+            }
+
+            res.status(200).json(type);
+        }catch(error){
+            console.error('Error fetching type: ',error);
+            res.status(500).json({message: 'Internal server error'});
+        }
     }
-};
+
+module.exports = { createType, getAllTypes, getTypeById };

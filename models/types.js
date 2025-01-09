@@ -1,8 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db.js');
-const Field = require('./fields');
 
-const Type = sequelize.define('Type',{
+const Types = sequelize.define('types',{
     id: {
         type: DataTypes.STRING,
         primaryKey: true,
@@ -13,31 +12,18 @@ const Type = sequelize.define('Type',{
         allowNull: false,
         // unique: true
     },
-    // fields: {
-    //     type: DataTypes.JSON,
-    //     allowNull: false,
-    // },
+    fields: {
+        type: DataTypes.JSONB,
+        allowNull: false,
+    },
     desc: {
         type: DataTypes.STRING,
         allowNull: true,
     },
 }, {
-    tableName: 'type',
+    tableName: 'types',
     schema: 'public',
     timestamps: false,
 });
 
-// //Association
-// Type.associate = (models) => {
-//     Type.hasMany(models.Fields, {
-//         foreignKey: 'typeId', 
-//         as: 'fields',
-//         onDelete: 'CASCADE',
-//     });
-// };
-
-//Establishing the relationship
-Type.hasMany(Field, { foreignKey: 'typeId', onDelete: 'CASCADE'});
-// Type.hasMany(Field, {foreignKey: 'typeId', as: 'fields'});
-
-module.exports = Type;
+module.exports = Types;

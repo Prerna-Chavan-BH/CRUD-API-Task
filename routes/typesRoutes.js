@@ -1,5 +1,5 @@
 const express = require('express');
-const { createType, getAlltypes, getTypeById } = require('../controllers/typesController');
+const { createType, getAllTypes, getTypeById } = require('../controllers/typesController');
 
 const router = express.Router();
 
@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/types', createType);
 
 //GET /types: get all types
-router.get('/types', getAlltypes);
+router.get('/types', getAllTypes);
 
 //GET /types/:typeId: get a specific type by ID
 router.get('/types/:typeId', getTypeById);

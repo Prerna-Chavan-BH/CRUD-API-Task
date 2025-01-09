@@ -32,15 +32,6 @@ const Field = sequelize.define('Field',{
     timestamps: false,
 });
 
-//Establishing the relationship
-Field.belongsTo(Type, {foreignKey: 'typeId'});
 
-// //Association
-// Field.associate = (model) => {
-//     Field.belongsTo(model.Type, {
-//         foreignKey: 'typeId',
-//         as: 'type'
-//     });
-// };
-console.log(Type);
+// console.log(Type);
 module.exports = Field;
