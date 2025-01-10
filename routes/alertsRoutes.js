@@ -1,5 +1,5 @@
 const express = require('express');
-const{ createAlerts ,searchAlerts } = require('../controllers/alertsController');
+const { createAlerts } = require('../controllers/alertsController');
 
 const router = express.Router();
 
@@ -7,7 +7,7 @@ const router = express.Router();
 // router.get('/alerts', getAlerts);
 router.post('/alerts', createAlerts);
 
-router.post('/alerts/search', searchAlerts);
+// router.post('/alerts/search', searchAlerts);
 
 
 module.exports = router;

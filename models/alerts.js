@@ -3,12 +3,12 @@ const sequelize = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
 
 const Alerts = sequelize.define('alerts',{
-    id: {
-        type: DataTypes.UUID,
-        defaultValue: uuidv4,
-        primaryKey: true,
-        autoIncrement: false,
-    },
+    // id: {
+    //     type: DataTypes.UUID,
+    //     defaultValue: uuidv4,
+    //     primaryKey: true,
+    //     autoIncrement: false,
+    // },
     type_id: {
         type: DataTypes.UUID,
         allowNull: false,

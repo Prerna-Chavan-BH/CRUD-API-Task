@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const typesRoutes = require('./routes/typesRoutes');
 const alertsRoutes = require('./routes/alertsRoutes');
-const sequelize = require('./config/db');
-
+const {initDB} = require('./models/dbSetup');
+const Type = require('./models/types');
 //create an express app
 const app = express();
 const PORT = 9000;
@@ -17,20 +17,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', typesRoutes);
 app.use('/api', alertsRoutes);
 
-// //default routes
-// app.get('/', (req, res) => {
-//     res.send('Welcome to CRUD API for types and Alerts');
-// });
 //start the server and initialise the database
-(async () => {
+app.listen(PORT, async() => {
     try{
-        await sequelize.sync();
-        console.log('Sequelize models synchronised successfully.');
-
-        app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
-        });
-    }catch(error){
-        console.log('Error synchronising sequelize models: ', error);
+        console.log(`Server is running at http://localhost:${PORT}`);
+        await initDB();  //initialise database tables
+        console.log('Database initialized successfully');
+    }catch(err){
+        console.error('Error initialising database: ',err.message);
+        process.exit(1); //exit the process if db initialization failed
     }
-}) ();
+});

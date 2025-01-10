@@ -1,5 +1,19 @@
 const sequelize = require('../config/db');
-const { DataTypes } = require('sequelize');
+const {Type} = require('../models/types');
+
+const initDB = async () => {
+    try{
+        await sequelize.authenticate();
+        console.log('Database connected successfully');
+
+        await sequelize.sync();  
+
+        console.log('Database schema synced successfully');
+    } catch(err){
+        console.error('Database connection error: ', err);
+    }
+};
+
 
 async function createDynamicTable(typeID, fields) {
     try{
@@ -25,4 +39,4 @@ async function createDynamicTable(typeID, fields) {
     }
 }
 
-module.exports = { createDynamicTable };
+module.exports = { createDynamicTable, initDB };

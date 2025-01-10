@@ -1,48 +1,70 @@
-const sequelize = require('../config/db.js');
-const { Type } = require('../models/types.js');
-const { createDynamicTable } = require('../models/dbSetup');
+const sequelize = require('../config/db');
+const {Sequelize, DataTypes } = require('sequelize');
+const Type = require('../models/types.js');
+// const { createDynamicTable } = require('../models/dbSetup');
 
 //create a new type and corresponding table
-async function createType (req, res){
-    const { id, name, fields, desc } = req.body;
+exports.createType = async (req, res) => {
+    
+    try {
+        const { name, fields, desc } = req.body;
 
-    try{
-        //check if the type alrready exists
-        const existingType = await Types.findBypk(id);
-        if(existingType){
-            return res.status(400).json({message: 'Type with this ID already exists.'});
+        //validate the payload
+        if(!name || !fields || !Array.isArray(fields) || fields.length === 0){
+            return res.status(400).json({error: 'Name and fields required'});
         }
 
-        //insert into the types table
-        await Types.create({ id, name, fields, desc });
+        await Type.sync();
+        
+        //create a new type entry in the 'types' table
+        const newType = await Type.create({name, fields, description: desc});
 
-        //create dynmaic table for the type
-        await createDynamicTable(id, fields);
+        //extract the generated type id
+        const typeId = newType.id;
 
-        res.status(201).json({id});
+        //prepare dynamic table creation SQL
+        const tableName = `type_${typeId}`;
+        const columns = fields.map(
+            (field) => `"${field.name}" ${field.datatype.toUpperCase()}`
+        );
+
+        const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS "public"."${tableName}"(
+            "id" SERIAL PRIMARY KEY,
+            ${columns.join(', ')}
+        );
+    `;
+    
+    //execute the synamic table creation query
+    await sequelize.query(createTableQuery, {type: Sequelize.QueryTypes.RAW });
+
+    res.status(201).json({
+        message: 'Type created successfully and tabel created',
+        typeId,
+        tableName,
+    });
     }catch(error){
-        console.error('Error creating types: ',error);
+        console.error('Error creating type: ', error);
+        res.status(500).json({error: 'Internal server error'});
+    }
+};
+    //get all types
+exports.getAllTypes = async(req, res) => {
+    try{
+        const types = await Type.findAll();
+        res.status(200).json(types);
+    }catch(error){
+        console.error('Error fetching types: ',error);
         res.status(500).json({message: 'Internal server error'});
     }
-    }
+}
 
-    //get all types
-    async function getAllTypes(req, res){
-        try{
-            const types = await Types.findAll();
-            res.status(200).json(types);
-        }catch(error){
-            console.error('Error fetching types: ',error);
-            res.status(500).json({message: 'Internal server error'});
-        }
-    }
-
-    //get a specific type by id
-    async function getTypeById(req, res){
+//get a specific type by id
+exports.getTypeById = async(req, res) => {
         const {typeId} = req.params;
 
         try{
-            const type = await Types.findBypk(typeId);
+            const type = await Type.findByPk(typeId);
             if(!type){
                 return res.status(404).json({message: 'Type not found.'});
             }
@@ -54,4 +76,4 @@ async function createType (req, res){
         }
     }
 
-module.exports = { createType, getAllTypes, getTypeById };
+// module.exports = { createType, getAllTypes, getTypeById };
