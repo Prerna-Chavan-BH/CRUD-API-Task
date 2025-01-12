@@ -17,7 +17,7 @@ exports.createType = async (req, res) => {
         await Type.sync();
         
         //create a new type entry in the 'types' table
-        const newType = await Type.create({name, fields, description: desc});
+        const newType = await Type.create({name, fields, desc});
 
         //extract the generated type id
         const typeId = newType.id;
